@@ -1,0 +1,12 @@
+<ng-container *ngIf="coordinates">
+  <svg xmlns="http://www.w3.org/2000/svg" width="600px" height="600px">
+    <line
+      [attr.x1]="coordinates!.x1"
+      [attr.y1]="coordinates!.y1"
+      [attr.x2]="coordinates!.x2"
+      [attr.y2]="coordinates!.y2"
+      pathLength="1"
+      stroke="black"
+    />
+  </svg>
+</ng-container>

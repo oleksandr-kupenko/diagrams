@@ -1,0 +1,81 @@
+.diagrams-zone {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
+  height: 600px;
+  width: 600px;
+  max-width: 100%;
+  border: 2px solid blue;
+  position: relative;
+
+  &__block {
+    width: 200px;
+    height: 70px;
+    border: solid 2px black;
+    transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    position: absolute;
+    z-index: 10;
+
+    .compound {
+      cursor: pointer;
+      max-width: 16px;
+      max-height: 16px;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: rgb(140, 125, 219);
+      position: absolute;
+      z-index: 10;
+      //display: none;
+
+      &.top-compound {
+        top: -8px;
+        left: calc(50% - 8px);
+      }
+      &.right-compound {
+        top: calc(50% - 8px);
+        right: -9px;
+      }
+      &.bottom-compound {
+        bottom: -7px;
+        left: calc(50% - 8px);
+      }
+      &.left-compound {
+        top: calc(50% - 8px);
+        left: -9px;
+      }
+    }
+
+    &:hover {
+      .compound {
+        display: block;
+        background-color: rgb(66, 57, 112);
+      }
+    }
+  }
+
+  .arrow {
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
+    &.top-arrow {
+      /*       top: -8px;
+      left: calc(50% - 1px); */
+    }
+    &.right-arrow {
+      /*       top: calc(50% - 8px);
+      right: -100%; */
+    }
+    &.bottom-arrow {
+      /*       left: calc(50% - 1px);
+      margin-top: -9px; */
+    }
+    &.left-arrow {
+      /*       top: calc(50% - 8px);
+      left: -3px; */
+    }
+  }
+}

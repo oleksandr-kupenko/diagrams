@@ -1,0 +1,58 @@
+Diagrams
+
+<button (click)="handleAddBlock()">ADD BLOCK</button>
+
+<section #mainZone class="diagrams-zone">
+  <ng-container
+    *ngFor="let block of blocksList; let idx = index; trackBy: identify"
+  >
+    <div
+      class="diagrams-zone__block"
+      cdkDragBoundary=".diagrams-zone"
+      cdkDrag
+      (started)="test($event)"
+    >
+      <span
+        appBackDrop
+        (clickOutside)="cancelArrowCreate()"
+        class="top-compound compound"
+        (click)="addArrow('top', idx, $event)"
+      ></span>
+      <span
+        appBackDrop
+        (clickOutside)="cancelArrowCreate()"
+        class="right-compound compound"
+        (click)="addArrow('right', idx, $event)"
+      ></span>
+      <span
+        appBackDrop
+        (clickOutside)="cancelArrowCreate()"
+        class="bottom-compound compound"
+        (click)="addArrow('bottom', idx, $event)"
+      ></span>
+      <span
+        appBackDrop
+        (clickOutside)="cancelArrowCreate()"
+        class="left-compound compound"
+        (click)="addArrow('left', idx, $event)"
+      ></span>
+
+      <ng-container *ngFor="let arrow of block.arrows | keyvalue">
+        <app-arrow
+          *ngIf="arrow.value"
+          [coordinates]="arrow.value"
+          class="arrow"
+          [class]="arrow.key + '-arrow'"
+        ></app-arrow>
+      </ng-container>
+
+      <app-rectangular-block></app-rectangular-block>
+    </div>
+  </ng-container>
+  <app-arrow
+    *ngIf="isCreateArrowMode"
+    [coordinates]="currentNewArrow.coordinates"
+    class="arrow"
+    [class]="currentNewArrow.position + '-arrow'"
+  ></app-arrow>
+</section>
