@@ -2,15 +2,21 @@ Diagrams
 
 <button (click)="handleAddBlock()">ADD BLOCK</button>
 
-<section #mainZone class="diagrams-zone">
+<section
+  #mainZone
+  class="diagrams-zone"
+  (click)="handleActivateArrowMaker($event)"
+>
   <ng-container
     *ngFor="let block of blocksList; let idx = index; trackBy: identify"
   >
     <div
       class="diagrams-zone__block"
+      [class.active]="idx == currentChangingBlockIndex"
       cdkDragBoundary=".diagrams-zone"
       cdkDrag
-      (started)="test($event)"
+      (cdkDragMoved)="test($event, idx)"
+      (cdkDragStarted)="setPrevMoveArrowsList()"
     >
       <span
         appBackDrop
@@ -37,20 +43,21 @@ Diagrams
         (click)="addArrow('left', idx, $event)"
       ></span>
 
-      <ng-container *ngFor="let arrow of block.arrows | keyvalue">
-        <app-arrow
-          *ngIf="arrow.value"
-          [coordinates]="arrow.value"
-          class="arrow"
-          [class]="arrow.key + '-arrow'"
-        ></app-arrow>
-      </ng-container>
-
       <app-rectangular-block></app-rectangular-block>
     </div>
+
+    <ng-container *ngFor="let arrow of arrowList | keyvalue">
+      <app-arrow
+        *ngIf="arrow.value"
+        [coordinates]="arrow.value"
+        class="arrow"
+        [class]="arrow.key + '-arrow'"
+      ></app-arrow>
+    </ng-container>
   </ng-container>
+
   <app-arrow
-    *ngIf="isCreateArrowMode"
+    *ngIf="isCreateArrowMode && currentNewArrow"
     [coordinates]="currentNewArrow.coordinates"
     class="arrow"
     [class]="currentNewArrow.position + '-arrow'"
