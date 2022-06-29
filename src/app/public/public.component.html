@@ -2,21 +2,19 @@ Diagrams
 
 <button (click)="handleAddBlock()">ADD BLOCK</button>
 
-<section
-  #mainZone
-  class="diagrams-zone"
-  (click)="handleActivateArrowMaker($event)"
->
+<section #mainZone class="diagrams-zone">
   <ng-container
     *ngFor="let block of blocksList; let idx = index; trackBy: identify"
   >
     <div
+      #block
       class="diagrams-zone__block"
       [class.active]="idx == currentChangingBlockIndex"
       cdkDragBoundary=".diagrams-zone"
       cdkDrag
-      (cdkDragMoved)="test($event, idx)"
-      (cdkDragStarted)="setPrevMoveArrowsList()"
+      (cdkDragMoved)="handleMoveBlock($event, idx)"
+      (cdkDragStarted)="handleSetPrevMoveArrowsList()"
+      (cdkDragEnded)="handleSaveBlcokNewCoordinates(idx)"
     >
       <span
         appBackDrop

@@ -1,29 +1,20 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
+import { fromEvent, Subscription, take } from 'rxjs';
 import { ArrowCordinate } from 'src/app/public/components/arrow/arrow.interface';
-
-interface Block {
-  coordinates: {
-    left: number;
-    top: number;
-  };
-
-  arrows: BlockArrows;
-}
-
-interface BlockArrows {
-  top: { arrowId: number; type: BlockArrowType } | null;
-  right: { arrowId: number; type: BlockArrowType } | null;
-  bottom: { arrowId: number; type: BlockArrowType } | null;
-  left: { arrowId: number; type: BlockArrowType } | null;
-}
-
-type BlockArrowSide = 'top' | 'right' | 'bottom' | 'left';
-type BlockArrowType = 'start' | 'end';
-
-interface ArrowsList {
-  [key: number]: ArrowCordinate;
-}
+import {
+  ArrowsList,
+  Block,
+  BlockArrowSide,
+  BlockArrowType,
+} from 'src/app/public/public.interface';
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-public',
@@ -36,7 +27,7 @@ export class PublicComponent implements AfterViewInit {
   public currentNewArrow: {
     coordinates: ArrowCordinate;
     position: BlockArrowSide;
-    index: number;
+    startBlockIndex: number;
   } | null = null;
 
   public currentChangingBlockIndex: number | null = null;
@@ -44,19 +35,8 @@ export class PublicComponent implements AfterViewInit {
   public arrowList: ArrowsList = {};
   public blocksList: Block[] = [
     {
-      coordinates: {
-        left: 10,
-        top: 10,
-      },
-      arrows: {
-        top: null,
-        right: null,
-        bottom: null,
-        left: null,
-      },
-    },
-    {
-      coordinates: { left: 10, top: 10 },
+      id: uuid(),
+      translate3d: 'translate3d(100px, 35px, 0px)',
       arrows: {
         top: null,
         right: null,
@@ -70,30 +50,38 @@ export class PublicComponent implements AfterViewInit {
 
   private mainZoneLeft = 0;
   private mainZoneTop = 0;
+  private prevMoveArrowsList!: ArrowsList;
 
   @ViewChild('mainZone', { static: true, read: ElementRef })
   mainZone!: ElementRef;
 
+  @ViewChildren('block', { read: ElementRef })
+  blocksDomElements!: QueryList<ElementRef>;
+
   constructor() {}
 
   ngAfterViewInit(): void {
+    this.arrangeBlocksInPlace();
     this.mainZoneLeft = this.mainZone.nativeElement.offsetLeft;
     this.mainZoneTop = this.mainZone.nativeElement.offsetTop;
   }
 
-  public handleActivateArrowMaker(event: any) {
-    console.log(event);
+  public cancelArrowCreate() {
+    this.mouseSubscribe.unsubscribe();
+    this.isCreateArrowMode = false;
+    this.currentChangingBlockIndex = null;
   }
 
-  public identify(index: number, item: any) {
-    return index;
+  public identify(index: number, item: Block) {
+    return item.id;
   }
 
   public handleAddBlock() {
     this.blocksList = [
       ...this.blocksList,
       {
-        coordinates: { left: 10, top: 10 },
+        id: uuid(),
+        translate3d: 'translate3d(198px, 325px, 0px)',
         arrows: {
           top: null,
           right: null,
@@ -102,6 +90,19 @@ export class PublicComponent implements AfterViewInit {
         },
       },
     ];
+
+    this.blocksDomElements.changes.pipe(take(1)).subscribe(() => {
+      this.arrangeBlocksInPlace();
+    });
+  }
+
+  private arrangeBlocksInPlace() {
+    this.blocksDomElements.forEach((item, index) => {
+      item.nativeElement.setAttribute(
+        'style',
+        `transform: ${this.blocksList[index].translate3d}`
+      );
+    });
   }
 
   private removeArrowInBlocks(arrowId: number) {
@@ -170,6 +171,36 @@ export class PublicComponent implements AfterViewInit {
     }
   }
 
+  private setCurrentNewArrowCoordinates(
+    side: BlockArrowSide,
+    index: number,
+    event: any,
+    type: BlockArrowType
+  ) {
+    const startCoordinates = this.calculateMiddleBlockCoodrinates(
+      side,
+      event.target.parentElement.getBoundingClientRect()
+    );
+
+    this.currentNewArrow = {
+      coordinates: {
+        x1:
+          type == 'start'
+            ? startCoordinates.x
+            : this.currentNewArrow!.coordinates.x1,
+        y1:
+          type == 'start'
+            ? startCoordinates.y
+            : this.currentNewArrow!.coordinates.y1,
+        x2: startCoordinates.x,
+        y2: startCoordinates.y,
+      },
+      position: type == 'start' ? side : this.currentNewArrow!.position,
+      startBlockIndex:
+        type == 'start' ? index : this.currentNewArrow!.startBlockIndex,
+    };
+  }
+
   public addArrow(side: BlockArrowSide, index: number, event: any) {
     event.stopPropagation();
 
@@ -182,34 +213,16 @@ export class PublicComponent implements AfterViewInit {
     if (!this.isCreateArrowMode) {
       this.currentChangingBlockIndex = index;
 
-      const startCoordinates = this.calculateMiddleBlockCoodrinates(
-        side,
-        event.target.parentElement.getBoundingClientRect()
-      );
-
-      this.currentNewArrow = {
-        coordinates: {
-          x1: startCoordinates.x,
-          y1: startCoordinates.y,
-          x2: startCoordinates.x,
-          y2: startCoordinates.y,
-        },
-        position: side,
-        index,
-      };
+      this.setCurrentNewArrowCoordinates(side, index, event, 'start');
 
       this.isCreateArrowMode = true;
       this.observeMouse();
     } else {
-      this.saveArrow(index, side);
+      console.log(22, event);
       this.cancelArrowCreate();
+      this.setCurrentNewArrowCoordinates(side, index, event, 'end');
+      this.saveArrow(index, side);
     }
-  }
-
-  public cancelArrowCreate() {
-    this.mouseSubscribe.unsubscribe();
-    this.isCreateArrowMode = false;
-    this.currentChangingBlockIndex = null;
   }
 
   private saveArrow(endIndex: number, endSide: BlockArrowSide) {
@@ -218,12 +231,11 @@ export class PublicComponent implements AfterViewInit {
       : 1;
 
     this.arrowList[+newId] = this.currentNewArrow!.coordinates;
-
+    //start block
     this.blocksList = this.blocksList.map((block, blockIndex: number) => {
-      if (blockIndex == this.currentNewArrow!.index) {
+      if (blockIndex == this.currentNewArrow!.startBlockIndex) {
         return {
           ...block,
-
           arrows: {
             ...block.arrows,
             [this.currentNewArrow!.position]: {
@@ -233,6 +245,7 @@ export class PublicComponent implements AfterViewInit {
           },
         };
       }
+      //endBlock
       if (blockIndex == endIndex) {
         return {
           ...block,
@@ -251,7 +264,7 @@ export class PublicComponent implements AfterViewInit {
 
       return { ...block };
     });
-
+    console.log(this.blocksList);
     this.currentNewArrow = null;
   }
 
@@ -272,13 +285,20 @@ export class PublicComponent implements AfterViewInit {
     );
   }
 
-  prevMoveArrowsList!: ArrowsList;
+  public handleSaveBlcokNewCoordinates(index: number) {
+    const translate3d = (
+      this.blocksDomElements.toArray()[index].nativeElement as HTMLDivElement
+    ).style.transform;
+    this.blocksList[index].translate3d = translate3d;
 
-  public setPrevMoveArrowsList() {
+    console.log(this.blocksList);
+  }
+
+  public handleSetPrevMoveArrowsList() {
     this.prevMoveArrowsList = JSON.parse(JSON.stringify(this.arrowList));
   }
 
-  public test(event: any, index: number) {
+  public handleMoveBlock(event: any, index: number) {
     let blockArrows = this.blocksList[index].arrows;
 
     Object.keys(blockArrows).map((arrowSide) => {
