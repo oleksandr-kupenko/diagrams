@@ -13,7 +13,7 @@ export class BackdropDirective {
   constructor(private _elementRef: ElementRef) {}
   @Output() public clickOutside = new EventEmitter();
 
-  @HostListener('document:click', ['$event.target']) public onClick(
+  @HostListener('document:mousedown', ['$event.target']) public onClick(
     targetElement: EventTarget
   ) {
     const clickedInside =

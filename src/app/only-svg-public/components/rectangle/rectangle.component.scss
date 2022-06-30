@@ -1,8 +1,10 @@
 .rect {
+  cursor: move;
   text {
     text-anchor: middle;
     font-size: 15;
     dominant-baseline: middle;
+    cursor: auto;
 
     &.blocked {
       -webkit-touch-callout: none;
@@ -28,6 +30,10 @@
     .port {
       visibility: visible;
     }
+
+    .port.hidden {
+      visibility: hidden;
+    }
   }
 }
 
@@ -37,5 +43,17 @@
 
   &:hover {
     fill: red;
+  }
+}
+
+.stretch {
+  &.left-top,
+  &.right-bottom {
+    cursor: nwse-resize;
+  }
+
+  &.right-top,
+  &.left-bottom {
+    cursor: nesw-resize;
   }
 }

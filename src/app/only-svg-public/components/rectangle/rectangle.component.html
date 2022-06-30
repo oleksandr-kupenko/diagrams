@@ -24,6 +24,7 @@
   <g
     *ngFor="let port of portsList"
     class="port"
+    [class.hidden]="isEditMode"
     [attr.transform]="port.transform"
   >
     <circle
@@ -54,4 +55,45 @@
     stroke-width="1"
     (click)="onDeleteBlock.emit()"
   ></circle>
+  <g *ngIf="isEditMode">
+    <rect
+      class="stretch left-top"
+      x="-3"
+      y="-3"
+      width="8"
+      height="8"
+      stroke="rgb(95, 149, 255)"
+      fill="white"
+    />
+
+    <rect
+      class="stretch right-top"
+      x="116"
+      y="-3"
+      width="8"
+      height="8"
+      stroke="rgb(95, 149, 255)"
+      fill="white"
+    />
+
+    <rect
+      class="stretch right-bottom"
+      x="116"
+      y="57"
+      width="8"
+      height="8"
+      stroke="rgb(95, 149, 255)"
+      fill="white"
+    />
+
+    <rect
+      class="stretch left-bottom"
+      x="-3"
+      y="57"
+      width="8"
+      height="8"
+      stroke="rgb(95, 149, 255)"
+      fill="white"
+    />
+  </g>
 </svg:g>
