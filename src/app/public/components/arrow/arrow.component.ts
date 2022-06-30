@@ -18,4 +18,8 @@ export class ArrowComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  public handleEditArrow() {
+    //TODO need logic
+  }
 }

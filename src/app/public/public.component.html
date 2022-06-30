@@ -14,8 +14,14 @@ Diagrams
       cdkDrag
       (cdkDragMoved)="handleMoveBlock($event, idx)"
       (cdkDragStarted)="handleSetPrevMoveArrowsList()"
-      (cdkDragEnded)="handleSaveBlcokNewCoordinates(idx)"
+      (cdkDragEnded)="handleSaveBlcokNewCoordinates(idx, $event)"
     >
+      <button
+        class="diagrams-zone__block--delete-btn"
+        (click)="deleteBlock(block.id)"
+      >
+        x
+      </button>
       <span
         appBackDrop
         (clickOutside)="cancelArrowCreate()"

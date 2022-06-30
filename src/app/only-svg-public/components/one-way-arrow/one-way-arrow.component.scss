@@ -1,0 +1,15 @@
+.delete-btn {
+  cursor: pointer;
+
+  &:hover {
+    fill: red;
+  }
+}
+
+.text-delete-btn {
+  cursor: pointer;
+}
+
+.text-delete-btn:hover + .delete-btn {
+  fill: red;
+}

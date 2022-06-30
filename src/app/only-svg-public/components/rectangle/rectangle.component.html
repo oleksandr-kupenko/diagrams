@@ -1,0 +1,57 @@
+<!-- <svg:text x="0" y="65">test text</svg:text> -->
+<svg:g class="rect" (click)="handleEditMode()" />
+
+<svg:g
+  data-shape="custom-rect"
+  class="rect"
+  appBackDrop
+  (dblclick)="handleEnableEditMode(textRef)"
+  (clickOutside)="isEditMode = false"
+>
+  <ng-content></ng-content>
+  <text
+    #textRef
+    cdkDragHandle
+    fill="#262626"
+    text-anchor="middle"
+    font-family="Arial, helvetica, sans-serif"
+    transform="matrix(1,0,0,1,56,25)"
+    xml:space="preserve"
+    [class.blocked]="!isEditMode"
+  >
+    <tspan dy="0.3em" class="v-line">Some text</tspan>
+  </text>
+  <g
+    *ngFor="let port of portsList"
+    class="port"
+    [attr.transform]="port.transform"
+  >
+    <circle
+      (mouseenter)="onComeToBlockPort(port.side); $event.stopPropagation()"
+      (mouseleave)="onOutputToBlockPort(port.side); $event.stopPropagation()"
+      [attr.side]="port.side"
+      [attr.blockId]="id"
+      r="4"
+      fill="#fff"
+      stroke="#5F95FF"
+      port="539ae3e2-28b2-4afa-9dc3-d3c3dc4d98be"
+      port-group="right"
+      class="port-body"
+      magnet="true"
+      stroke-width="1"
+    ></circle>
+  </g>
+
+  <circle
+    *ngIf="isEditMode"
+    class="delete-btn"
+    transform="matrix(1,0,0,1,110,10)"
+    r="5"
+    stroke="#5F95FF"
+    port="539ae3e2-28b2-4afa-9dc3-d3c3dc4d98be"
+    port-group="right"
+    magnet="true"
+    stroke-width="1"
+    (click)="onDeleteBlock.emit()"
+  ></circle>
+</svg:g>

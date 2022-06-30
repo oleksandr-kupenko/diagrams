@@ -96,6 +96,71 @@ export class PublicComponent implements AfterViewInit {
     });
   }
 
+  public deleteBlock(id: string) {
+    const blockArrows: number[] = [];
+    this.blocksList.forEach((block) => {
+      Object.values(block.arrows).forEach((arrow) => {
+        if (arrow && arrow.arrowId) {
+          blockArrows.push(arrow.arrowId);
+        }
+      });
+    });
+
+    if (blockArrows.length) {
+      blockArrows.forEach((arrowId) => {
+        delete this.arrowList[arrowId];
+        this.removeArrowInBlocks(arrowId);
+      });
+    }
+    this.blocksList = this.blocksList.filter((block) => block.id != id);
+  }
+
+  public handleSaveBlcokNewCoordinates(index: number, event: any) {
+    console.log(event);
+    const translate3d = (
+      this.blocksDomElements.toArray()[index].nativeElement as HTMLDivElement
+    ).style.transform;
+    this.blocksList[index].translate3d = translate3d;
+
+    console.log(this.blocksList);
+  }
+
+  public handleSetPrevMoveArrowsList() {
+    this.prevMoveArrowsList = JSON.parse(JSON.stringify(this.arrowList));
+  }
+
+  public handleMoveBlock(event: any, index: number) {
+    ``;
+    let blockArrows = this.blocksList[index].arrows;
+
+    Object.keys(blockArrows).map((arrowSide) => {
+      let arrow = blockArrows[arrowSide as keyof typeof blockArrows];
+
+      if (arrow) {
+        //start coordinates
+        if (arrow.type === 'start') {
+          this.arrowList[arrow.arrowId as number].x1 =
+            this.prevMoveArrowsList[arrow.arrowId as number].x1 +
+            event.distance.x;
+
+          this.arrowList[arrow.arrowId as number].y1 =
+            this.prevMoveArrowsList[arrow.arrowId as number].y1 +
+            event.distance.y;
+        }
+        //end coordinates
+        else if (arrow.type === 'end') {
+          this.arrowList[arrow.arrowId as number].x2 =
+            this.prevMoveArrowsList[arrow.arrowId as number].x2 +
+            event.distance.x;
+
+          this.arrowList[arrow.arrowId as number].y2 =
+            this.prevMoveArrowsList[arrow.arrowId as number].y2 +
+            event.distance.y;
+        }
+      }
+    });
+  }
+
   private arrangeBlocksInPlace() {
     this.blocksDomElements.forEach((item, index) => {
       item.nativeElement.setAttribute(
@@ -105,6 +170,7 @@ export class PublicComponent implements AfterViewInit {
     });
   }
 
+  //todo add link to block
   private removeArrowInBlocks(arrowId: number) {
     this.blocksList.forEach((block) => {
       Object.keys(block.arrows).forEach((arrow) => {
@@ -120,8 +186,8 @@ export class PublicComponent implements AfterViewInit {
     const arowId = this.blocksList[index].arrows[side]?.arrowId;
 
     if (arowId) {
-      delete this.arrowList[arowId];
-      this.removeArrowInBlocks(arowId);
+      delete this.arrowList[arowId as number];
+      this.removeArrowInBlocks(arowId as number);
     }
   }
 
@@ -203,12 +269,8 @@ export class PublicComponent implements AfterViewInit {
 
   public addArrow(side: BlockArrowSide, index: number, event: any) {
     event.stopPropagation();
-
-    console.dir(event.target.parentElement.getBoundingClientRect());
-
+    console.log(event);
     this.removeOldArrow(side, index);
-
-    console.log(event.clientX, event.clientY);
 
     if (!this.isCreateArrowMode) {
       this.currentChangingBlockIndex = index;
@@ -218,7 +280,6 @@ export class PublicComponent implements AfterViewInit {
       this.isCreateArrowMode = true;
       this.observeMouse();
     } else {
-      console.log(22, event);
       this.cancelArrowCreate();
       this.setCurrentNewArrowCoordinates(side, index, event, 'end');
       this.saveArrow(index, side);
@@ -249,7 +310,6 @@ export class PublicComponent implements AfterViewInit {
       if (blockIndex == endIndex) {
         return {
           ...block,
-
           arrows: {
             ...block.arrows,
             [endSide]: {
@@ -264,7 +324,7 @@ export class PublicComponent implements AfterViewInit {
 
       return { ...block };
     });
-    console.log(this.blocksList);
+
     this.currentNewArrow = null;
   }
 
@@ -283,45 +343,5 @@ export class PublicComponent implements AfterViewInit {
         };
       }
     );
-  }
-
-  public handleSaveBlcokNewCoordinates(index: number) {
-    const translate3d = (
-      this.blocksDomElements.toArray()[index].nativeElement as HTMLDivElement
-    ).style.transform;
-    this.blocksList[index].translate3d = translate3d;
-
-    console.log(this.blocksList);
-  }
-
-  public handleSetPrevMoveArrowsList() {
-    this.prevMoveArrowsList = JSON.parse(JSON.stringify(this.arrowList));
-  }
-
-  public handleMoveBlock(event: any, index: number) {
-    let blockArrows = this.blocksList[index].arrows;
-
-    Object.keys(blockArrows).map((arrowSide) => {
-      let arrow = blockArrows[arrowSide as keyof typeof blockArrows];
-
-      if (arrow) {
-        //start coordinates
-        if (arrow.type === 'start') {
-          this.arrowList[arrow.arrowId].x1 =
-            this.prevMoveArrowsList[arrow.arrowId].x1 + event.distance.x;
-
-          this.arrowList[arrow.arrowId].y1 =
-            this.prevMoveArrowsList[arrow.arrowId].y1 + event.distance.y;
-        }
-        //end coordinates
-        else if (arrow.type === 'end') {
-          this.arrowList[arrow.arrowId].x2 =
-            this.prevMoveArrowsList[arrow.arrowId].x2 + event.distance.x;
-
-          this.arrowList[arrow.arrowId].y2 =
-            this.prevMoveArrowsList[arrow.arrowId].y2 + event.distance.y;
-        }
-      }
-    });
   }
 }

@@ -1,0 +1,41 @@
+.rect {
+  text {
+    text-anchor: middle;
+    font-size: 15;
+    dominant-baseline: middle;
+
+    &.blocked {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  }
+
+  .port {
+    visibility: hidden;
+    cursor: crosshair;
+    transition: 0.2s;
+
+    .port {
+      visibility: visible;
+    }
+  }
+
+  &:hover {
+    .port {
+      visibility: visible;
+    }
+  }
+}
+
+.delete-btn {
+  cursor: pointer;
+  fill: #cd5c5c;
+
+  &:hover {
+    fill: red;
+  }
+}

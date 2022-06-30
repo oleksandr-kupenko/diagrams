@@ -1,0 +1,47 @@
+<button class="add-block-btn" (click)="handleAddRectangle()">
+  Add rectangle
+</button>
+
+<div #svgContainer class="svg-container">
+  <svg class="dropzone" height="500px" width="100%">
+    <ng-container *ngFor="let block of blocksList; let idx = index">
+      <g
+        *ngIf="block.id"
+        #blockRef
+        width="120"
+        height="120"
+        cdkDrag
+        reactangle
+        text="This works"
+        [cdkDragDisabled]="isCreateArrowMode"
+        [cdkDragFreeDragPosition]="block.position"
+        (cdkDragStarted)="handleSetPrevMoveArrowsList()"
+        (cdkDragEnded)="handleSaveBlcokNewCoordinates(idx, blockRef)"
+        (cdkDragMoved)="handleMoveBlock($event, idx)"
+        (onDeleteBlock)="handleDeleteBlock(idx)"
+        [id]="block.id"
+      >
+        <rect
+          cdkDragHandle
+          fill="#EFF4FF"
+          stroke="#5F95FF"
+          stroke-width="1"
+          width="120"
+          height="60"
+        ></rect>
+      </g>
+    </ng-container>
+    <g
+      one-way-arrow
+      *ngIf="isCreateArrowMode && currentNewArrow"
+      [coordinates]="currentNewArrow.coordinates"
+      [isTemproraryArrow]="true"
+    ></g>
+    <g
+      one-way-arrow
+      *ngFor="let arrow of arrowList | keyvalue"
+      [coordinates]="arrow.value.coordinates"
+      (onDeleteArrow)="handleDeleteArrow(arrow.key)"
+    ></g>
+  </svg>
+</div>

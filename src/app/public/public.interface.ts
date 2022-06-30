@@ -7,10 +7,10 @@ export interface Block {
 }
 
 export interface BlockArrows {
-  top: { arrowId: number; type: BlockArrowType } | null;
-  right: { arrowId: number; type: BlockArrowType } | null;
-  bottom: { arrowId: number; type: BlockArrowType } | null;
-  left: { arrowId: number; type: BlockArrowType } | null;
+  top: { arrowId: number | string; type: BlockArrowType } | null;
+  right: { arrowId: number | string; type: BlockArrowType } | null;
+  bottom: { arrowId: number | string; type: BlockArrowType } | null;
+  left: { arrowId: number | string; type: BlockArrowType } | null;
 }
 
 export type BlockArrowSide = 'top' | 'right' | 'bottom' | 'left';
