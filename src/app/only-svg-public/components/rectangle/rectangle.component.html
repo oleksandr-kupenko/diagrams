@@ -4,23 +4,39 @@
 <svg:g
   data-shape="custom-rect"
   class="rect"
+  #blockRef
   appBackDrop
-  (dblclick)="handleEnableEditMode(textRef)"
+  (dblclick)="handleEnableEditMode(blockRef)"
   (clickOutside)="isEditMode = false"
 >
-  <ng-content></ng-content>
-  <text
-    #textRef
+  <g
+    cdkDragRootElement=".drag-drop-wrapper"
+    cdkDrag
     cdkDragHandle
-    fill="#262626"
-    text-anchor="middle"
-    font-family="Arial, helvetica, sans-serif"
-    transform="matrix(1,0,0,1,56,25)"
-    xml:space="preserve"
-    [class.blocked]="!isEditMode"
+    [cdkDragFreeDragPosition]="blockPosition"
+    (cdkDragStarted)="dragStarted.emit()"
+    (cdkDragEnded)="dragEnded.emit()"
+    (cdkDragMoved)="dragMoved.emit($event)"
   >
-    <tspan dy="0.3em" class="v-line">Some text</tspan>
-  </text>
+    <rect
+      fill="#EFF4FF"
+      stroke="#5F95FF"
+      stroke-width="1"
+      width="120"
+      height="60"
+    ></rect>
+    <text
+      fill="#262626"
+      text-anchor="middle"
+      font-family="Arial, helvetica, sans-serif"
+      transform="matrix(1,0,0,1,56,25)"
+      xml:space="preserve"
+      [class.blocked]="!isEditMode"
+    >
+      <tspan x="0" dy="0.5em">very long text</tspan>
+    </text>
+  </g>
+
   <g
     *ngFor="let port of portsList"
     class="port"

@@ -43,7 +43,7 @@ export class OnlySvgPublicComponent implements OnInit, AfterViewInit {
     if (event?.target?.attributes?.side?.value) {
       const side = event.target.attributes.side.value;
       const blockId = event.target.attributes.blockId.value;
-      this.saveArrow(blockId, side);
+      this.saveArrow(blockId, side, event);
     }
     this.cancelArrowCreate();
   }
@@ -268,7 +268,7 @@ export class OnlySvgPublicComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private saveArrow(endBlockId: string, endSide: BlockArrowSide) {
+  private saveArrow(endBlockId: string, endSide: BlockArrowSide, event: any) {
     if (endBlockId == this.currentNewArrow!.startBlockId) {
       this.cancelArrowCreate();
       return;
@@ -292,8 +292,18 @@ export class OnlySvgPublicComponent implements OnInit, AfterViewInit {
       ? +Object.keys(this.arrowList)[Object.keys(this.arrowList).length - 1] + 1
       : 1;
 
+    const endCoordinates = this.calculateMiddleBlockCoodrinates(
+      endSide,
+      event.target.parentElement.getBoundingClientRect()
+    );
+    console.log(endCoordinates);
+
     this.arrowList[+newArrowId] = {
-      coordinates: this.currentNewArrow!.coordinates,
+      coordinates: {
+        ...this.currentNewArrow!.coordinates,
+        x2: endCoordinates.x,
+        y2: endCoordinates.y,
+      },
       startBlockId: this.currentNewArrow!.startBlockId,
       endBlockId: endBlockId,
     };

@@ -10,26 +10,15 @@
         #blockRef
         width="120"
         height="120"
-        cdkDrag
         reactangle
-        text="This works"
-        [cdkDragDisabled]="isCreateArrowMode"
-        [cdkDragFreeDragPosition]="block.position"
-        (cdkDragStarted)="handleSetPrevMoveArrowsList()"
-        (cdkDragEnded)="handleSaveBlcokNewCoordinates(idx, blockRef)"
-        (cdkDragMoved)="handleMoveBlock($event, idx)"
+        class="drag-drop-wrapper"
+        [blockPosition]="block.position"
+        (dragStarted)="handleSetPrevMoveArrowsList()"
+        (dragEnded)="handleSaveBlcokNewCoordinates(idx, blockRef)"
+        (dragMoved)="handleMoveBlock($event, idx)"
         (onDeleteBlock)="handleDeleteBlock(idx)"
         [id]="block.id"
-      >
-        <rect
-          cdkDragHandle
-          fill="#EFF4FF"
-          stroke="#5F95FF"
-          stroke-width="1"
-          width="120"
-          height="60"
-        ></rect>
-      </g>
+      ></g>
     </ng-container>
     <g
       one-way-arrow

@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  Renderer2,
+} from '@angular/core';
 import { BlockArrowSide } from 'src/app/public/public.interface';
 
 @Component({
@@ -8,7 +15,11 @@ import { BlockArrowSide } from 'src/app/public/public.interface';
 })
 export class RectangleComponent implements OnInit {
   @Input() id!: string;
+  @Input() blockPosition!: { x: number; y: number };
   @Output() onDeleteBlock = new EventEmitter();
+  @Output() dragStarted = new EventEmitter();
+  @Output() dragEnded = new EventEmitter();
+  @Output() dragMoved = new EventEmitter<any>();
 
   public isReadyToConnect = false;
   public isEditMode = false;
@@ -34,7 +45,7 @@ export class RectangleComponent implements OnInit {
 
   @Output() onCreateArrow = new EventEmitter<BlockArrowSide>();
 
-  constructor() {}
+  constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {}
 
@@ -49,7 +60,8 @@ export class RectangleComponent implements OnInit {
   }
 
   public handleEnableEditMode(event: any) {
-    console.dir(event);
+    console.dir(event.previousElementSibling.getBoundingClientRect());
+    console.dir(event.previousElementSibling.width);
     this.isEditMode = true;
     //document.body.contentEditable = 'true';
   }

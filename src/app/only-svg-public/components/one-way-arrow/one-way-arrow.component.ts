@@ -28,11 +28,22 @@ export class OneWayArrowComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['coordinates']) {
+    //this.getAngle();
+    /* if (changes['coordinates']) {
       this.deleteBtnTranslate = `translate(${
         (this.coordinates!.x1 + this.coordinates!.x2) / 2
       },${(this.coordinates!.y1 + this.coordinates!.y2) / 2})`;
-    }
+    } */
+  }
+
+  public getAngle() {
+    const c = this.coordinates;
+    var dy = c.y2 - c.x1;
+    var dx = c.x2 - c.x1;
+    var theta = Math.atan2(dy, dx);
+    theta *= 180 / Math.PI;
+    console.log(theta);
+    return theta;
   }
 
   public handleEdit() {
